@@ -100,6 +100,8 @@ public class HBaseExample {
 				BufferedReader br = new BufferedReader(new FileReader(file));
 				int linecount = 0;
 				String line = null;
+        String[] comps = args[curTableID].split("/");
+        String tmpCol = comps[comps.length - 1].replaceAll(".txt", "");
 				putList = new ArrayList<Put>(listCapacity);
 				while (null != (line = br.readLine())) {
 					if (0 == linecount % 100000) System.out.println(linecount + " lines added to hbase.");
@@ -107,7 +109,7 @@ public class HBaseExample {
 
           String[] pair = line.split("\\s");
           addRecordToPutList(pair[0], "grade", "name", pair[0]);
-          addRecordToPutList(pair[0], "grade", args[curTableID].replaceAll(".txt", ""), pair[0]);
+          addRecordToPutList(pair[0], "grade", tmpCol, pair[0]);
 
 					// if capacity of our putList buffer is reached, dump them into HBase
 					if (putList.size() == listCapacity) {
