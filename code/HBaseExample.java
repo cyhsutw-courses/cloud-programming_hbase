@@ -109,7 +109,7 @@ public class HBaseExample {
 
           String[] pair = line.split("\\s");
           addRecordToPutList(pair[0], "grade", "name", pair[0]);
-          addRecordToPutList(pair[0], "grade", tmpCol, pair[0]);
+          addRecordToPutList(pair[0], "grade", tmpCol, pair[1]);
 
 					// if capacity of our putList buffer is reached, dump them into HBase
 					if (putList.size() == listCapacity) {
