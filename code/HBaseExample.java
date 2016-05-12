@@ -28,14 +28,13 @@ public class HBaseExample {
 	private static Configuration conf;
 	private static Connection connection;
 	private static Admin admin;
-	
+
 	// A buffer to tempory store for put request, used to speed up the process of putting records into hbase
 	private static List<Put> putList;
 	private static int listCapacity = 1000000;
-	
-	// TODO: Set up your tableName and columnFamilies in the table
-	private static String[] tableName = {...};
-	private static String[] tableColFamilies = {...};
+
+	private static String[] tableName = { "s103062512:math", "s103062512:eng" };
+	private static String[] tableColFamilies = { "grade" };
 
 	public static void createTable(String tableName, String[] colFamilies) throws Exception {
 		// Instantiating table descriptor class
@@ -44,50 +43,47 @@ public class HBaseExample {
 			System.out.println(tableName + " : Table already exists!");
 		} else {
 			HTableDescriptor tableDescriptor = new HTableDescriptor(hTableName);
-			// TODO: Adding column families to table descriptor
 			for (String cf : colFamilies) {
-				// tableDescriptor.addFamily(new HColumnDescriptor(...));
+        tableDescriptor.addFamily(new HColumnDescriptor(cf));
 			}
-			// TODO: Admin creates table by HTableDescriptor instance
+
 			System.out.println("Creating table: " + tableName + "...");
-			// admin.createTable(...) 
+			admin.createTable(tableDescriptor);
 			System.out.println("Table created");
 		}
 	}
-	
+
 	public static void removeTable(String tableName) throws Exception {
 		TableName hTableName = TableName.valueOf(tableName);
 		if (!admin.tableExists(hTableName)) {
 			System.out.println(tableName + ": Table does not exist!");
 		} else {
 			System.out.println("Deleting table: " + tableName + "...");
-			// TODO: disable & drop table
+		  admin.deleteTable(hTableName);
 			System.out.println("Table deleted");
 		}
 	}
-	
+
 	public static void addRecordToPutList(String rowKey, String colFamily,
 			String qualifier, String value) throws Exception {
-		// TODO: use Put to wrap information and put it to PutList.
-		// Put put = new Put(...);
-		// put.addColumn(...);
-		// putList.add(put);
+		Put put = new Put(rowKey.getBytes());
+		put.addColumn(colFamily.getBytes(), qualifier.getBytes(), value.getBytes());
+		putList.add(put);
 	}
-	
+
 	public static void addRecordToHBase(String tableName) throws Exception {
-		// TODO: dump things from memory (PutList) to HBaseConfiguration
-		// Table table = ...
-		// table.put(...)
-		// putList.clear();
+		Table table = connection.getTable(TableName.valueOf(tableName));
+		table.put(putList);
+		putList.clear();
 	}
-	
+
 	public static void deleteRecord(String tableName, String rowKey) throws Exception {
 		Table table = connection.getTable(TableName.valueOf(tableName));
 		// TODO use Delete to wrap key information and use Table api to delete it.
 	}
-	
+
 	public static void main(String[] args){
-		
+
 		try {
 			// Instantiating hbase connection
 			conf = HBaseConfiguration.create();
@@ -107,12 +103,12 @@ public class HBaseExample {
 				putList = new ArrayList<Put>(listCapacity);
 				while (null != (line = br.readLine())) {
 					if (0 == linecount % 100000) System.out.println(linecount + " lines added to hbase.");
-					System.out.println(line);
-					// TODO : Split the content of a line and store it to hbase
-					
-					// TODO : Add the record to corresponding hbase table
-					// addRecordToPutList(...);
-					
+          System.out.println(line);
+
+          String[] pair = line.split("\\s");
+          addRecordToPutList(pair[0], "grade", "name", pair[0]);
+          addRecordToPutList(pair[0], "grade", args[curTableID].replaceAll(".txt", ""), pair[0]);
+
 					// if capacity of our putList buffer is reached, dump them into HBase
 					if (putList.size() == listCapacity) {
 						addRecordToHBase(tableName[curTableID]);
