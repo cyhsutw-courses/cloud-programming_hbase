@@ -33,7 +33,7 @@ public class HBaseExample {
 	private static List<Put> putList;
 	private static int listCapacity = 1000000;
 
-	private static String[] tableName = { "s103062512:math", "s103062512:eng" };
+	private static String[] tableName = { "s103062512:eng", "s103062512:math" };
 	private static String[] tableColFamilies = { "grade" };
 
 	public static void createTable(String tableName, String[] colFamilies) throws Exception {
