@@ -105,7 +105,7 @@ public class HBaseExample {
 				putList = new ArrayList<Put>(listCapacity);
 				while (null != (line = br.readLine())) {
 					if (0 == linecount % 100000) System.out.println(linecount + " lines added to hbase.");
-          System.out.println(line);
+          // System.out.println(line);
 
           String[] pair = line.split("\\s");
           addRecordToPutList(pair[0], "grade", "name", pair[0]);
