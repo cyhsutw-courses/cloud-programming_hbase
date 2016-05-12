@@ -8,4 +8,4 @@ CREATE EXTERNAL TABLE math_score (key string, name string, score int) STORED BY 
 CREATE TABLE s103062512_score AS SELECT eng_score.name AS name, eng_score.score AS english, math_score.score AS math, ((math_score.score + eng_score.score) / 2) AS avg FROM eng_score, math_score WHERE eng_score.name = math_score.name;
 
 SELECT COUNT(name) FROM s103062512_score WHERE avg < 60.0;
-SELECT name FROM s103062512_score ORDER BY 'avg' DESC LIMIT 5;
+SELECT name FROM s103062512_score ORDER BY `avg` DESC LIMIT 5;
